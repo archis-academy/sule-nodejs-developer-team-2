@@ -2,10 +2,12 @@
   "name": "expense-tracker",
   "version": "1.0.0",
   "description": "",
-  "main": "src/server.js",
+  "main": "src/app.js",
   "scripts": {
+    "format": "prettier --write .",
+    "check-format": "prettier --check .",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/server.js"
+    "dev": "nodemon src/app.js"
   },
   "keywords": [],
   "author": "",

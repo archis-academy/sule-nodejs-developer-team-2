@@ -1,7 +1,6 @@
-const route = require('express').Router();
+const healthRoute = require('express').Router();
 const { getHealthStatus } = require('../controllers/health');
 
-route.get('/health', getHealthStatus);
+healthRoute.get('/health', getHealthStatus);
 
-
-module.exports = { route }
+module.exports = { healthRoute };
