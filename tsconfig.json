@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "target": "es2022",
-    "module": "es2022",
-    "moduleResolution": "node",
-    "allowJs": true,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "allowJs": false,
     "removeComments": true,
     "resolveJsonModule": true,
     "typeRoots": ["./node_modules/@types"],
@@ -23,7 +23,7 @@
   "ts-node": {
     "compilerOptions": {
       "moduleDetection": "force",
-      "module": "CommonJS",
+      "module": "es2022",
       "resolveJsonModule": true,
       "allowJs": true,
       "esModuleInterop": true,
