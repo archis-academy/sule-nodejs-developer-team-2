@@ -1,23 +1,17 @@
-const pg = require('pg');
-const dotenv = require('dotenv');
-dotenv.config();
+const { PrismaClient } = require('@prisma/client');
 
-const { Pool } = pg;
+const prisma = new PrismaClient();
 
-if (!process.env.DATABASE_URL) {
-  throw new Error('Database URL not found in .env file!');
+async function connectDB() {
+  try {
+    await prisma.$connect();
+    console.log('✅ PostgreSQL connection successful via Prisma!');
+  } catch (error) {
+    console.error('❌ PostgreSQL connection failed:', error);
+    process.exit(1);
+  }
 }
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
+connectDB();
 
-pool.on('connect', () => {
-  console.log('Connected to PostgreSQL database.');
-});
-
-pool.query('SELECT NOW()')
-  .then(() => console.log('✅  PostgreSQL connection successful!'))
-  .catch(() => console.error('❌ PostgreSQL connection failed'));
-  
-module.exports = pool;
+module.exports = prisma;
