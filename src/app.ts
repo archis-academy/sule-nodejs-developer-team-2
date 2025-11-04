@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import healthRoutes from './routes/health';
+import './utils/prisma';
 
 const app = express();
 app.use(cors());
