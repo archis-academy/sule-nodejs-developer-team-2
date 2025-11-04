@@ -126,7 +126,7 @@ The application uses a PostgreSQL database, managed with Prisma. Below is an ove
     - `teamId`: Foreign key to `Team` (onDelete: Cascade).
     - `createdBy`: Foreign key to `User` (onDelete: Cascade).
     - `expenseCategoryId`: Optional foreign key to `ExpenseCategory` (onDelete: SetNull).
-    - `amount`: Amount of the expense (integer).
+    - `amount`: Amount of the expense (decimal).
     - `createdAt`: Timestamp for creation.
     - `updatedAt`: Timestamp for last update.
 - **Relationships:**
@@ -152,7 +152,7 @@ The application uses a PostgreSQL database, managed with Prisma. Below is an ove
 - **Fields:**
     - `userId`: Foreign key to `User` (onDelete: Cascade).
     - `expenseId`: Foreign key to `Expense` (onDelete: Cascade).
-    - `amount`: The amount of the expense allocated to this user (integer).
+    - `amount`: The amount of the expense allocated to this user (decimal).
     - `createdAt`: Timestamp for creation.
     - `updatedAt`: Timestamp for last update.
 - **Relationships:**
