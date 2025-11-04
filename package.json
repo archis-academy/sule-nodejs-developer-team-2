@@ -10,7 +10,10 @@
     "lint": "eslint . --ext .js,.mjs,.cjs,.ts,.mts,.cts",
     "start": "node dist/app.js",
     "build": "tsc",
-    "dev": "nodemon src/app.ts"
+    "dev": "nodemon src/app.ts",
+    "prisma:migrate": "npx prisma migrate dev",
+    "prisma:generate": "npx prisma generate",
+    "prisma:rollback": "npx prisma migrate reset"
   },
   "keywords": [],
   "author": "",
