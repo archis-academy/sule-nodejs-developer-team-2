@@ -4,18 +4,20 @@ import { connectPrisma, disconnectPrisma } from './prisma';
 export async function startServer(app: Application, port: number) {
   try {
     await connectPrisma();
-    app.listen(port, () => {
+    const server = app.listen(port, () => {
       console.log(`Server is running on port ${port}`);
     });
 
     process.on('SIGINT', async () => {
       console.log('SIGINT signal received: closing HTTP server');
+      await server.close();
       await disconnectPrisma();
       process.exit(0);
     });
 
     process.on('SIGTERM', async () => {
       console.log('SIGTERM signal received: closing HTTP server');
+      await server.close();
       await disconnectPrisma();
       process.exit(0);
     });

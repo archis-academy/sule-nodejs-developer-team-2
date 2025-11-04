@@ -6,6 +6,10 @@ export async function connectPrisma() {
 }
 
 export async function disconnectPrisma() {
-  await prisma.$disconnect();
-  console.log('Prisma disconnected.');
+  try {
+    await prisma.$disconnect();
+    console.log('Prisma disconnected.');
+  } catch (error) {
+    console.error('Error disconnecting Prisma:', error);
+  }
 }
