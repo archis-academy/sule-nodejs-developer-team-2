@@ -4,6 +4,8 @@ const app = express();
 const cors = require('cors');
 const { healthRoute } = require('./routes/health');
 
+const pool = require('./config/db.ts');
+
 // middlewares
 app.use(express.json());
 app.use(cors());
