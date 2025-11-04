@@ -74,6 +74,92 @@ project-root/
 - `yarn start` — Run server in production mode.
 - `yarn test` — Run tests.
 
+## Database Schema
+
+The application uses a PostgreSQL database, managed with Prisma. Below is an overview of the data models and their relationships.
+
+### Models
+
+#### `User`
+- **Table Name:** `users`
+- **Description:** Stores user information, including authentication details.
+- **Fields:**
+    - `id`: Unique identifier (UUID).
+    - `email`: User's email address (unique).
+    - `password`: Hashed password.
+    - `createdAt`: Timestamp for creation.
+    - `updatedAt`: Timestamp for last update.
+- **Relationships:**
+    - `teams`: Many-to-many relationship with `Team` through `TeamMember`.
+    - `expenses`: One-to-many relationship with `Expense` (as creator).
+    - `expenseSplits`: One-to-many relationship with `ExpenseSplit`.
+
+#### `Team`
+- **Table Name:** `teams`
+- **Description:** Stores information about teams.
+- **Fields:**
+    - `id`: Unique identifier (UUID).
+    - `name`: Team name.
+    - `description`: Optional team description.
+    - `createdAt`: Timestamp for creation.
+    - `updatedAt`: Timestamp for last update.
+- **Relationships:**
+    - `members`: Many-to-many relationship with `User` through `TeamMember`.
+    - `expenses`: One-to-many relationship with `Expense`.
+
+#### `TeamMember`
+- **Table Name:** `team_members`
+- **Description:** Junction table for many-to-many relationship between `User` and `Team`.
+- **Fields:**
+    - `userId`: Foreign key to `User` (onDelete: Cascade).
+    - `teamId`: Foreign key to `Team` (onDelete: Cascade).
+- **Relationships:**
+    - `User`: Links to the `User` model.
+    - `Team`: Links to the `Team` model.
+- **Primary Key:** Composite key `(userId, teamId)`.
+
+#### `Expense`
+- **Table Name:** `expenses`
+- **Description:** Records individual expenses made by users within a team.
+- **Fields:**
+    - `id`: Unique identifier (UUID).
+    - `teamId`: Foreign key to `Team` (onDelete: Cascade).
+    - `createdBy`: Foreign key to `User` (onDelete: Cascade).
+    - `expenseCategoryId`: Optional foreign key to `ExpenseCategory` (onDelete: SetNull).
+    - `amount`: Amount of the expense (integer).
+    - `createdAt`: Timestamp for creation.
+    - `updatedAt`: Timestamp for last update.
+- **Relationships:**
+    - `Team`: Links to the `Team` model.
+    - `Creator`: Links to the `User` model who created the expense.
+    - `ExpenseCategory`: Links to the `ExpenseCategory` model.
+    - `expenseSplits`: One-to-many relationship with `ExpenseSplit`.
+
+#### `ExpenseCategory`
+- **Table Name:** `expense_categories`
+- **Description:** Defines categories for expenses (e.g., Food, Travel).
+- **Fields:**
+    - `id`: Unique identifier (UUID).
+    - `name`: Category name.
+    - `createdAt`: Timestamp for creation.
+    - `updatedAt`: Timestamp for last update.
+- **Relationships:**
+    - `expenses`: One-to-many relationship with `Expense`.
+
+#### `ExpenseSplit`
+- **Table Name:** `expense_splits`
+- **Description:** Records how an expense is split among users.
+- **Fields:**
+    - `userId`: Foreign key to `User` (onDelete: Cascade).
+    - `expenseId`: Foreign key to `Expense` (onDelete: Cascade).
+    - `amount`: The amount of the expense allocated to this user (integer).
+    - `createdAt`: Timestamp for creation.
+    - `updatedAt`: Timestamp for last update.
+- **Relationships:**
+    - `User`: Links to the `User` model.
+    - `Expense`: Links to the `Expense` model.
+- **Primary Key:** Composite key `(userId, expenseId)`.
+
 ## Additional Resources
 
 - [Express.js Documentation](https://expressjs.com/)
