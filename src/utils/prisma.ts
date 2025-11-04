@@ -28,14 +28,3 @@ process.on('SIGTERM', async () => {
   await disconnectDB();
   process.exit(0);
 });
-
-process.on('exit', async (code) => {
-  if (code !== 0) {
-    console.log(
-      `Application exiting with code ${code}. Disconnecting from PostgreSQL.`
-    );
-  }
-  if (prisma && prisma.$disconnect) {
-    await prisma.$disconnect();
-  }
-});
