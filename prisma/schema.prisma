@@ -12,3 +12,90 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id       String @id @default(uuid())
+  email    String @unique
+  password String
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  teams         TeamMember[]
+  expenses      Expense[]
+  expenseSplits ExpenseSplit[]
+
+  @@index([email])
+  @@map("users")
+}
+
+model Team {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+
+  members  TeamMember[]
+  expenses Expense[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("teams")
+}
+
+model TeamMember {
+  userId String @map("user_id")
+  teamId String @map("team_id")
+
+  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@id([userId, teamId])
+  @@map("team_members")
+}
+
+model Expense {
+  id                String  @id @default(uuid())
+  teamId            String  @map("team_id")
+  createdBy         String  @map("created_by")
+  expenseCategoryId String? @map("expense_category_id")
+  amount            Decimal
+
+  Team            Team             @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  Creator         User             @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  ExpenseCategory ExpenseCategory? @relation(fields: [expenseCategoryId], references: [id], onDelete: SetNull)
+
+  expenseSplits ExpenseSplit[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("expenses")
+}
+
+model ExpenseCategory {
+  id   String @id @default(uuid())
+  name String
+
+  expenses Expense[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("expense_categories")
+}
+
+model ExpenseSplit {
+  userId    String  @map("user_id")
+  expenseId String  @map("expense_id")
+  amount    Decimal
+
+  User    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Expense Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@id([userId, expenseId])
+  @@map("expense_splits")
+}

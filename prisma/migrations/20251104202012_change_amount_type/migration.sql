@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "expense_splits" ALTER COLUMN "amount" SET DATA TYPE DOUBLE PRECISION;
+
+-- AlterTable
+ALTER TABLE "expenses" ALTER COLUMN "amount" SET DATA TYPE DOUBLE PRECISION;
