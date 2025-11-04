@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "allowJs": false,
+    "removeComments": true,
+    "resolveJsonModule": true,
+    "typeRoots": ["./node_modules/@types"],
+    "noImplicitAny": true,
+    "sourceMap": true,
+    "outDir": "dist",
+    "strict": true,
+    "baseUrl": ".",
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": false,
+    "emitDecoratorMetadata": false,
+    "skipLibCheck": true,
+    "exactOptionalPropertyTypes": false,
+    "strictNullChecks": true
+  },
+  "ts-node": {
+    "compilerOptions": {
+      "moduleDetection": "force",
+      "resolveJsonModule": true,
+      "allowJs": false,
+      "esModuleInterop": true,
+      "isolatedModules": true
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}
