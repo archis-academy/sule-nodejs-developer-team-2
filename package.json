@@ -13,7 +13,7 @@
     "dev": "nodemon src/app.ts",
     "prisma:migrate": "npx prisma migrate dev",
     "prisma:generate": "npx prisma generate",
-    "prisma:rollback": "npx prisma migrate reset"
+    "prisma:reset": "npx prisma migrate reset"
   },
   "keywords": [],
   "author": "",

@@ -59,7 +59,7 @@ model Expense {
   teamId            String  @map("team_id")
   createdBy         String  @map("created_by")
   expenseCategoryId String? @map("expense_category_id")
-  amount            Int
+  amount            Float
 
   Team            Team             @relation(fields: [teamId], references: [id], onDelete: Cascade)
   Creator         User             @relation(fields: [createdBy], references: [id], onDelete: Cascade)
@@ -88,7 +88,7 @@ model ExpenseCategory {
 model ExpenseSplit {
   userId    String @map("user_id")
   expenseId String @map("expense_id")
-  amount    Int
+  amount    Float
 
   User    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   Expense Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
