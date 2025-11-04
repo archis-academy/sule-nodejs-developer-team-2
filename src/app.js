@@ -1,8 +1,8 @@
-require('dotenv').config();
+require('dotenv');
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const { healthRoute } = require('./routes/health');
+const { healthRoute } = require('./routes/health.js');
 
 const pool = require('./config/db.ts');
 

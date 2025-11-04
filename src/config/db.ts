@@ -1,4 +1,3 @@
-// db.js
 const pg = require('pg');
 const dotenv = require('dotenv');
 dotenv.config();
@@ -6,7 +5,7 @@ dotenv.config();
 const { Pool } = pg;
 
 if (!process.env.DATABASE_URL) {
-  throw new Error('Database url env dosyasında bulunamadı!');
+  throw new Error('Database URL not found in .env file!');
 }
 
 const pool = new Pool({
@@ -14,11 +13,11 @@ const pool = new Pool({
 });
 
 pool.on('connect', () => {
-  console.log('PostgreSQL veritabanına bağlandı.');
+  console.log('Connected to PostgreSQL database.');
 });
 
 pool.query('SELECT NOW()')
-  .then(() => console.log('✅ PostgreSQL bağlantısı başarılı!'))
-  .catch(() => console.error('❌ PostgreSQL bağlantısı başarısız:'));
+  .then(() => console.log('✅  PostgreSQL connection successful!'))
+  .catch(() => console.error('❌ PostgreSQL connection failed'));
   
 module.exports = pool;
