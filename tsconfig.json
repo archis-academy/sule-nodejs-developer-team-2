@@ -23,9 +23,8 @@
   "ts-node": {
     "compilerOptions": {
       "moduleDetection": "force",
-      "module": "es2022",
       "resolveJsonModule": true,
-      "allowJs": true,
+      "allowJs": false,
       "esModuleInterop": true,
       "isolatedModules": true
     }
