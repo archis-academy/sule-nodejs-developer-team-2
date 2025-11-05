@@ -7,7 +7,7 @@ class AuthService {
   async register(data: RegisterAuthDto) {
     const existingUser = await userService.getUserByEmail(data.email);
     if (existingUser) {
-      throw new AppError('User already exists', 400);
+      throw new AppError('User already exists', 409);
     }
     const hashedPassword = await bcrypt.hash(
       data.password,
