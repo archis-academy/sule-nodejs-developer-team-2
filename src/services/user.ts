@@ -13,7 +13,7 @@ class UserService {
     return user;
   }
   async getUserByEmail(email: string) {
-    const user = await userModel.getUserByEmail(email);
+    const user = await userModel.getUserByEmailWithPassword(email);
     return user ? user : undefined;
   }
 }

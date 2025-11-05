@@ -33,6 +33,19 @@ class UserModel {
         email: true,
         name: true,
         role: true,
+      },
+    });
+  }
+  async getUserByEmailWithPassword(email: string) {
+    return await prisma.user.findUnique({
+      where: {
+        email,
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
         password: true,
       },
     });
