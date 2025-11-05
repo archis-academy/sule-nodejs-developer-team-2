@@ -23,8 +23,10 @@ export const validate = (
     } catch (error) {
       if (error instanceof ZodError) {
         res.status(400).json({ error: error.issues.map((e) => e.message) });
+        return;
       }
       next(error);
+      return;
       // global error handler will catch this error
     }
   };
