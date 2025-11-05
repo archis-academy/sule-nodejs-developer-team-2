@@ -57,8 +57,7 @@ class JwtService {
       { ...payload, jti: refreshTokenRecord.id },
       process.env.JWT_REFRESH as string,
       {
-        expiresIn: ((process.env.REFRESH_EXPIRE_IN || '7') +
-          'd') as jwt.SignOptions['expiresIn'],
+        expiresIn: (expirationDays + 'd') as jwt.SignOptions['expiresIn'],
       }
     );
     return { accessToken, refreshToken };
