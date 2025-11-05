@@ -14,10 +14,7 @@ class UserService {
   }
   async getUserByEmail(email: string) {
     const user = await userModel.getUserByEmail(email);
-    if (!user) {
-      throw new AppError('User not found', 404);
-    }
-    return user;
+    return user ? user : undefined;
   }
 }
 
