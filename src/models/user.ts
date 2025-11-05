@@ -8,6 +8,7 @@ class UserModel {
       select: {
         id: true,
         email: true,
+        name: true,
       },
     });
   }
@@ -26,6 +27,11 @@ class UserModel {
     return await prisma.user.findUnique({
       where: {
         email,
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
       },
     });
   }

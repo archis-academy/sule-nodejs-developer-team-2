@@ -11,7 +11,7 @@ class AuthService {
     }
     const hashedPassword = await bcrypt.hash(
       data.password,
-      parseInt(process.env.SALT_ROUNDS as string, 10)
+      parseInt((process.env.SALT_ROUNDS as string) || '10', 10)
     );
     return await userService.createUser({
       ...data,
