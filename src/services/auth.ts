@@ -1,5 +1,6 @@
 import userService from './user';
 import { RegisterAuthDto } from '../dto/auth/register.auth';
+import { LoginAuthDto } from '../dto/auth/login.auth';
 import * as bcrypt from 'bcrypt';
 import { AppError } from '../utils/appError';
 
@@ -17,6 +18,21 @@ class AuthService {
       ...data,
       password: hashedPassword,
     });
+  }
+  async login(data: LoginAuthDto) {
+    const existingUser = await userService.getUserByEmail(data.email);
+    if (!existingUser) {
+      throw new AppError('Invalid email or password', 401);
+    }
+    const isPasswordCorrect = await bcrypt.compare(
+      data.password,
+      existingUser.password
+    );
+    if (!isPasswordCorrect) {
+      throw new AppError('Invalid email or password', 401);
+    }
+    const { id, email, name } = existingUser;
+    return { id, email, name };
   }
 }
 

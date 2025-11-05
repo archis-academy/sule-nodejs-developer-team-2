@@ -32,6 +32,7 @@ class UserModel {
         id: true,
         email: true,
         name: true,
+        password: true,
       },
     });
   }
