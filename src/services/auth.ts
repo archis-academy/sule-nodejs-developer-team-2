@@ -20,7 +20,9 @@ class AuthService {
     });
   }
   async login(data: LoginAuthDto) {
-    const existingUser = await userService.getUserByEmail(data.email);
+    const existingUser = await userService.getUserByEmailWithPassword(
+      data.email
+    );
     if (!existingUser) {
       throw new AppError('Invalid email or password', 401);
     }
