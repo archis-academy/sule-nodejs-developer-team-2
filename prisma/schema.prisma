@@ -25,6 +25,7 @@ model User {
   teams         TeamMember[]
   expenses      Expense[]
   expenseSplits ExpenseSplit[]
+  tokens        Token[]
 
   @@index([email])
   @@map("users")
@@ -99,4 +100,19 @@ model ExpenseSplit {
 
   @@id([userId, expenseId])
   @@map("expense_splits")
+}
+
+model Token {
+  id        String    @id @default(uuid())
+  userId    String    @map("user_id")
+  revokedAt DateTime? @map("revoked_at")
+  expiresAt DateTime  @map("expires_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("tokens")
 }
