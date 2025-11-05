@@ -17,9 +17,6 @@ class AuthController {
       if (error instanceof AppError) {
         res.status(error.statusCode).json({ message: error.message });
         return;
-      } else if (error instanceof Error) {
-        res.status(500).json({ message: 'Internal Server Error' });
-        return;
       } else {
         res.status(500).json({ message: 'Internal Server Error' });
       }
@@ -36,9 +33,6 @@ class AuthController {
     } catch (error: unknown) {
       if (error instanceof AppError) {
         res.status(error.statusCode).json({ message: error.message });
-        return;
-      } else if (error instanceof Error) {
-        res.status(500).json({ message: 'Internal Server Error' });
         return;
       } else {
         res.status(500).json({ message: 'Internal Server Error' });
