@@ -21,10 +21,11 @@ export const validate = (
 
       next();
     } catch (error) {
-      console.log();
-      res
-        .status(400)
-        .json({ error: (error as ZodError).issues.map((e) => e.message) });
+      if (error instanceof ZodError) {
+        res.status(400).json({ error: error.issues.map((e) => e.message) });
+      }
+      next(error);
+      // global error handler will catch this error
     }
   };
 };
