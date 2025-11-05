@@ -9,9 +9,13 @@ export default function authentication(
   next: NextFunction
 ) {
   const header = req.headers.authorization;
+  if (!header || !header.startsWith('Bearer ')) {
+    res.status(401).json({ message: 'Unauthorized' });
+    return;
+  }
   try {
     const decodedToken = jwtService.verifyToken(
-      header as string,
+      header,
       process.env.JWT_ACCESS as string
     );
     req.user = decodedToken as JwtPayload;
