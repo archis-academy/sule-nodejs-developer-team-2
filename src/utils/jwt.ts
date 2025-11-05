@@ -42,6 +42,7 @@ class JwtService {
     }
   }
   async generateToken(payload: JwtPayload) {
+    const expirationDays = parseInt(process.env.REFRESH_EXPIRE_DATE || '7', 10);
     const accessToken = jwt.sign(payload, process.env.JWT_ACCESS as string, {
       expiresIn: (process.env.ACCESS_EXPIRE_IN ||
         '1h') as jwt.SignOptions['expiresIn'],
@@ -49,7 +50,7 @@ class JwtService {
     const refreshTokenRecord = await prisma.token.create({
       data: {
         userId: payload.userId,
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        expiresAt: new Date(Date.now() + expirationDays * 24 * 60 * 60 * 1000),
       },
     });
     const refreshToken = jwt.sign(
