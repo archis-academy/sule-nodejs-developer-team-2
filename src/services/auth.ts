@@ -3,7 +3,7 @@ import { RegisterAuthDto } from '../dto/auth/register.auth';
 import { LoginAuthDto } from '../dto/auth/login.auth';
 import * as bcrypt from 'bcrypt';
 import { AppError } from '../utils/appError';
-
+import jwtService from '../utils/jwt';
 class AuthService {
   async register(data: RegisterAuthDto) {
     const existingUser = await userService.getUserByEmail(data.email);
@@ -31,8 +31,17 @@ class AuthService {
     if (!isPasswordCorrect) {
       throw new AppError('Invalid email or password', 401);
     }
-    const { id, email, name } = existingUser;
-    return { id, email, name };
+    const { accessToken, refreshToken } = await jwtService.generateToken({
+      userId: existingUser.id,
+      role: existingUser.role,
+    });
+    return {
+      id: existingUser.id,
+      email: existingUser.email,
+      name: existingUser.name,
+      accessToken,
+      refreshToken,
+    };
   }
 }
 
