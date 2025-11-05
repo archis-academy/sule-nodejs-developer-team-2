@@ -74,8 +74,7 @@ class JwtService {
     await this.revokeToken(header);
     return { message: 'Logout successfully' };
   }
-  verifyToken(header: string, secret: string) {
-    const token = this.splitToken(header);
+  verifyToken(token: string, secret: string) {
     try {
       return jwt.verify(token, secret) as JwtPayload;
     } catch (error) {
@@ -89,7 +88,8 @@ class JwtService {
     }
   }
   async logoutAll(header: string) {
-    const decoded = this.verifyToken(header, process.env.JWT_REFRESH as string);
+    const token = this.splitToken(header);
+    const decoded = this.verifyToken(token, process.env.JWT_REFRESH as string);
     const tokenRecord = await prisma.token.findUnique({
       where: { id: decoded.jti },
     });

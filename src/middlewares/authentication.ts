@@ -15,7 +15,7 @@ export default function authentication(
   }
   try {
     const decodedToken = jwtService.verifyToken(
-      header,
+      header.split(' ')[1],
       process.env.JWT_ACCESS as string
     );
     req.user = decodedToken as JwtPayload;
