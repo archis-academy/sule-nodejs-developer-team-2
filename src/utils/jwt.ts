@@ -17,6 +17,9 @@ class JwtService {
         token,
         process.env.JWT_REFRESH as string
       ) as JwtPayload;
+      if (!decoded.jti) {
+        throw new AppError('Invalid token', 401);
+      }
       const tokenRecord = await prisma.token.findUnique({
         where: { id: decoded.jti },
       });
