@@ -5,6 +5,8 @@ export function validateEnvVariables(): void {
     'SALT_ROUNDS',
     'DATABASE_URL',
     'PORT',
+    'ACCESS_EXPIRE_IN',
+    'REFRESH_EXPIRE_IN',
   ];
 
   const missingVariables: string[] = [];

@@ -42,7 +42,7 @@ class JwtService {
     }
   }
   async generateToken(payload: JwtPayload) {
-    const expirationDays = parseInt(process.env.REFRESH_EXPIRE_DATE || '7', 10);
+    const expirationDays = parseInt(process.env.REFRESH_EXPIRE_IN || '7', 10);
     const accessToken = jwt.sign(payload, process.env.JWT_ACCESS as string, {
       expiresIn: (process.env.ACCESS_EXPIRE_IN ||
         '1h') as jwt.SignOptions['expiresIn'],
@@ -57,8 +57,8 @@ class JwtService {
       { ...payload, jti: refreshTokenRecord.id },
       process.env.JWT_REFRESH as string,
       {
-        expiresIn: (process.env.REFRESH_EXPIRE_IN ||
-          '7d') as jwt.SignOptions['expiresIn'],
+        expiresIn: ((process.env.REFRESH_EXPIRE_IN || '7') +
+          'd') as jwt.SignOptions['expiresIn'],
       }
     );
     return { accessToken, refreshToken };
