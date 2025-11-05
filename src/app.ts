@@ -11,6 +11,7 @@ app.use(express.json());
 app.use('/api/health', healthRoutes);
 app.use('/api/v1/auth', authRouter);
 
+
 const PORT = parseInt(process.env.PORT || '3000', 10);
 
 startServer(app, PORT);
