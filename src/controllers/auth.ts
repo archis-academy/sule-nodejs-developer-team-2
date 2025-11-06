@@ -41,11 +41,7 @@ class AuthController {
   }
   async logout(req: Request, res: Response) {
     try {
-      const { authorization } = req.headers;
-      if (!authorization) {
-        throw new AppError('Authorization header is missing', 401);
-      }
-      const user = await authService.logout(authorization);
+      const user = await authService.logout(req.headers.authorization!);
       res.status(200).json(user);
     } catch (error: unknown) {
       if (error instanceof AppError) {
@@ -58,11 +54,7 @@ class AuthController {
   }
   async logoutAll(req: Request, res: Response) {
     try {
-      const { authorization } = req.headers;
-      if (!authorization) {
-        throw new AppError('Authorization header is missing', 401);
-      }
-      const user = await authService.logoutAll(authorization);
+      const user = await authService.logoutAll(req.headers.authorization!);
       res.status(200).json(user);
     } catch (error: unknown) {
       if (error instanceof AppError) {
@@ -75,11 +67,7 @@ class AuthController {
   }
   async refresh(req: Request, res: Response) {
     try {
-      const { authorization } = req.headers;
-      if (!authorization) {
-        throw new AppError('Authorization header is missing', 401);
-      }
-      const user = await authService.refresh(authorization);
+      const user = await authService.refresh(req.headers.authorization!);
       res.status(200).json(user);
     } catch (error: unknown) {
       if (error instanceof AppError) {
