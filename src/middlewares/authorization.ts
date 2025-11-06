@@ -7,7 +7,15 @@ export default function authorizeRole(
   teamIdParamKey: string = 'id'
 ) {
   return async (req: Request, res: Response, next: NextFunction) => {
-    if (!req.user || !roles.includes(req.user.role)) {
+    if (!req.user) {
+      res.status(401).json({ message: 'Unauthorized' });
+      return;
+    }
+    if (req.user.role === Role.ADMIN) {
+      next();
+      return;
+    }
+    if (!roles.includes(req.user.role)) {
       res.status(403).json({ message: 'Forbidden' });
       return;
     }
@@ -20,7 +28,7 @@ export default function authorizeRole(
     }
     const isTeamMember = await prisma.teamMember.findUnique({
       where: {
-        userId_teamId: { userId: req.user.userId, teamId: req.params.id },
+        userId_teamId: { userId: req.user.userId, teamId },
       },
     });
     if (!isTeamMember) {
