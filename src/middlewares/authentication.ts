@@ -28,4 +28,3 @@ export default function authentication(
       res.status(500).json({ message: 'Internal Server Error' });
     }
   }
-}

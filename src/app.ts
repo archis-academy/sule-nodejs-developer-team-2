@@ -20,6 +20,13 @@ try {
   process.exit(1);
 }
 
+try {
+  validateEnvVariables();
+} catch (error: unknown) {
+  console.error('Error validating environment variables:', error);
+  process.exit(1);
+}
+
 const PORT = parseInt(process.env.PORT || '3000', 10);
 
 startServer(app, PORT);
