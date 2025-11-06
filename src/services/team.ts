@@ -11,20 +11,18 @@ class TeamService {
     } catch (error: unknown) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         switch (error.code) {
-          case "P2002": // Unique constraint failed
+          case "P2002":
             throw new AppError("A team with this name already exists.", 409);
-          case "P2003": // Foreign key constraint failed
+          case "P2003":
             throw new AppError("Invalid user or team relation.", 400);
-          case "P2025": // Record not found
+          case "P2025":
             throw new AppError("Team not found.", 404);
           default:
             throw new AppError(`Database error: ${error.code}`, 500);
         }
       }
 
-      // Prisma dışı hatalar için
       if (error instanceof Error) {
-        // Geliştiriciye log atılabilir (opsiyonel)
         console.error("[createTeam Error]:", error);
         throw new AppError(error.message, 500);
       }
@@ -61,7 +59,16 @@ class TeamService {
 
   async updateTeam(teamId: string, userRole: string, data: UpdateTeamDto) {
     try {
+      // ❗ Yetki kontrolü
+      if (userRole !== "ADMIN") {
+        throw new AppError("Only admins can update team details.", 403);
+      }
+
       const team = await teamModel.updateTeam(teamId, data, userRole);
+      if (!team) {
+        throw new AppError("Team not found or update failed.", 404);
+      }
+
       return team;
     } catch (error: unknown) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -82,6 +89,11 @@ class TeamService {
 
   async deleteTeam(teamId: string, userRole: string) {
     try {
+      // ❗ Yetki kontrolü
+      if (userRole !== "ADMIN") {
+        throw new AppError("Only admins can delete teams.", 403);
+      }
+
       await teamModel.deleteTeam(teamId, userRole);
     } catch (error: unknown) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {

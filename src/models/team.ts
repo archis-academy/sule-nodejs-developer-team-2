@@ -46,22 +46,34 @@ export const getTeamsForUser = async (userId: string) => {
 };
 
 export const getTeamById = async (teamId: string, userId: string) => {
-  const team = await prisma.team.findUnique({
-    where: { id: teamId },
-    include: {
-      members: {
-        include: {
-          User: {
-            select: { id: true, name: true, email: true, role: true },
-          },
-        },
-      },
-      expenses: true,
+
+  const isMember = await prisma.teamMember.findFirst({
+    where: {
+      teamId,
+      userId,
     },
   });
 
-  return team;
+  if (isMember) {
+
+    const team = await prisma.team.findUnique({
+      where: { id: teamId },
+      include: {
+        members: {
+          include: {
+            User: {
+              select: { id: true, name: true, email: true, role: true },
+            },
+          },
+        },
+        expenses: true,
+      },
+    });
+
+    return team;
+  }
 };
+
 
 export const updateTeam = async (
   teamId: string,
