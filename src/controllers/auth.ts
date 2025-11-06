@@ -39,6 +39,57 @@ class AuthController {
       }
     }
   }
+  async logout(req: Request, res: Response) {
+    try {
+      const { authorization } = req.headers;
+      if (!authorization) {
+        throw new AppError('Authorization header is missing', 401);
+      }
+      const user = await authService.logout(authorization);
+      res.status(200).json(user);
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({ message: error.message });
+        return;
+      } else {
+        res.status(500).json({ message: 'Internal Server Error' });
+      }
+    }
+  }
+  async logoutAll(req: Request, res: Response) {
+    try {
+      const { authorization } = req.headers;
+      if (!authorization) {
+        throw new AppError('Authorization header is missing', 401);
+      }
+      const user = await authService.logoutAll(authorization);
+      res.status(200).json(user);
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({ message: error.message });
+        return;
+      } else {
+        res.status(500).json({ message: 'Internal Server Error' });
+      }
+    }
+  }
+  async refresh(req: Request, res: Response) {
+    try {
+      const { authorization } = req.headers;
+      if (!authorization) {
+        throw new AppError('Authorization header is missing', 401);
+      }
+      const user = await authService.refresh(authorization);
+      res.status(200).json(user);
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({ message: error.message });
+        return;
+      } else {
+        res.status(500).json({ message: 'Internal Server Error' });
+      }
+    }
+  }
 }
 
 const authController = new AuthController();
