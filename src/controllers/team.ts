@@ -10,7 +10,7 @@ class TeamController {
     res: Response
   ) {
     try {
-      const user = req.user as unknown as { userId: string; role?: string };
+      const user = req.user as { userId: string; role?: string };
       
 
       const { name, description } = req.body;
@@ -29,7 +29,7 @@ class TeamController {
 
   async getTeams(req: Request, res: Response) {
     try {
-      const user = req.user as unknown as { userId: string };
+      const user = req.user as { userId: string };
       const teams = await teamService.getTeams(user.userId);
       res.status(200).json(teams);
     } catch (error: unknown) {
@@ -43,7 +43,7 @@ class TeamController {
 
   async getTeamById(req: Request<{ id: string }>, res: Response) {
     try {
-      const user = req.user as unknown as { userId: string };
+      const user = req.user as { userId: string };
       const { id } = req.params;
 
       const team = await teamService.getTeamById(id, user.userId);
@@ -62,7 +62,7 @@ class TeamController {
     res: Response
   ) {
     try {
-      const user = req.user as unknown as { userId: string; role: string };
+      const user = req.user as { userId: string; role: string };
       const { id } = req.params;
       const { name, description } = req.body;
 
@@ -79,7 +79,7 @@ class TeamController {
 
   async deleteTeam(req: Request<{ id: string }>, res: Response) {
     try {
-      const user = req.user as unknown as { userId: string; role: string };
+      const user = req.user as { userId: string; role: string };
       const { id } = req.params;
 
       await teamService.deleteTeam(id, user.role);

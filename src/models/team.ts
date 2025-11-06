@@ -1,4 +1,5 @@
 import prisma from "../config/db";
+import { Role } from "@prisma/client";
 import { CreateTeamDto, UpdateTeamDto } from "../dto/team/team";
 
 export const createTeam = async (data: CreateTeamDto, userId: string) => {
@@ -80,7 +81,7 @@ export const updateTeam = async (
   data: UpdateTeamDto,
   userRole: string
 ) => {
-  if (userRole !== "ADMIN") {
+  if (userRole !== Role.ADMIN) {
     throw new Error("Only admins can update team information.");
   }
 
@@ -102,7 +103,7 @@ export const updateTeam = async (
 };
 
 export const deleteTeam = async (teamId: string, userRole: string) => {
-  if (userRole !== "ADMIN") {
+  if (userRole !== Role.ADMIN) {
     throw new Error("Only admins can delete teams.");
   }
 

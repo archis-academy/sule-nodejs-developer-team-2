@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { CreateTeamDto, UpdateTeamDto } from "../dto/team/team";
 import * as teamModel from "../models/team";
 import { AppError } from "../utils/appError";
@@ -8,18 +9,20 @@ class TeamService {
       const team = await teamModel.createTeam(data, userId);
       return team;
     } catch (error: unknown) {
-  console.error("❌ Create team error:", error); 
+      console.error("❌ Create team error:", error);
 
-  if (error instanceof Error && error.message.includes("already exists")) {
-    throw new AppError(error.message, 409);
-  }
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === "P2002") {
+          throw new AppError("A team with this name already exists.", 409);
+        }
+      }
 
-  if (error instanceof Error) {
-    throw new AppError(error.message, 500);
-  }
+      if (error instanceof Error) {
+        throw new AppError(error.message, 500);
+      }
 
-  throw new AppError("Failed to create team.", 500);
-}
+      throw new AppError("Failed to create team.", 500);
+    }
   }
 
   async getTeams(userId: string) {

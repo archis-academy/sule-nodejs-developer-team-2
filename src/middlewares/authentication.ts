@@ -19,7 +19,6 @@ export default function authentication(
       process.env.JWT_ACCESS as string
     );
     req.user = decodedToken as JwtPayload;
-
     next();
   } catch (error) {
     if (error instanceof AppError) {
