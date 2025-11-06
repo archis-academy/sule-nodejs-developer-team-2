@@ -16,6 +16,10 @@ class UserService {
     const user = await userModel.getUserByEmail(email);
     return user ? user : undefined;
   }
+  async getUserByEmailWithPassword(email: string) {
+    const user = await userModel.getUserByEmailWithPassword(email);
+    return user ? user : undefined;
+  }
 }
 
 const userService = new UserService();

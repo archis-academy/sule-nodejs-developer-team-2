@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { z } from 'zod';
+import { z, ZodError } from 'zod';
 
 export enum ValidationType {
   BODY = 'body',
@@ -21,7 +21,13 @@ export const validate = (
 
       next();
     } catch (error) {
+      if (error instanceof ZodError) {
+        res.status(400).json({ error: error.issues.map((e) => e.message) });
+        return;
+      }
       next(error);
+      return;
+      // global error handler will catch this error
     }
   };
 };
