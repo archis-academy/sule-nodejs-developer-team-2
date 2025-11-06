@@ -9,7 +9,6 @@ class TeamService {
       const team = await teamModel.createTeam(data, userId);
       return team;
     } catch (error: unknown) {
-      console.error("❌ Create team error:", error);
 
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === "P2002") {

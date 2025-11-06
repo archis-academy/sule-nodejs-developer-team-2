@@ -1,8 +1,8 @@
-
 import { Request, Response } from "express";
 import { AppError } from "../utils/appError";
 import teamService from "../services/team";
 import { CreateTeamDto, UpdateTeamDto } from "../dto/team/team";
+import { JwtPayload } from "../types/express"; 
 
 class TeamController {
   async createTeam(
@@ -10,13 +10,10 @@ class TeamController {
     res: Response
   ) {
     try {
-      const user = req.user as { userId: string; role?: string };
-      
-
+      const user = req.user as JwtPayload; 
       const { name, description } = req.body;
 
       const team = await teamService.createTeam({ name, description }, user.userId);
-
       res.status(201).json(team);
     } catch (error: unknown) {
       if (error instanceof AppError) {
@@ -29,7 +26,7 @@ class TeamController {
 
   async getTeams(req: Request, res: Response) {
     try {
-      const user = req.user as { userId: string };
+      const user = req.user as JwtPayload;
       const teams = await teamService.getTeams(user.userId);
       res.status(200).json(teams);
     } catch (error: unknown) {
@@ -43,7 +40,7 @@ class TeamController {
 
   async getTeamById(req: Request<{ id: string }>, res: Response) {
     try {
-      const user = req.user as { userId: string };
+      const user = req.user as JwtPayload;
       const { id } = req.params;
 
       const team = await teamService.getTeamById(id, user.userId);
@@ -62,7 +59,7 @@ class TeamController {
     res: Response
   ) {
     try {
-      const user = req.user as { userId: string; role: string };
+      const user = req.user as JwtPayload;
       const { id } = req.params;
       const { name, description } = req.body;
 
@@ -79,7 +76,7 @@ class TeamController {
 
   async deleteTeam(req: Request<{ id: string }>, res: Response) {
     try {
-      const user = req.user as { userId: string; role: string };
+      const user = req.user as JwtPayload;
       const { id } = req.params;
 
       await teamService.deleteTeam(id, user.role);
