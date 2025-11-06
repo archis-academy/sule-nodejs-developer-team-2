@@ -19,6 +19,7 @@ export default function authentication(secret: 'access' | 'refresh') {
       );
       if (secret === 'refresh') {
         next();
+        return;
       }
       req.user = decodedToken as JwtPayload;
       next();
