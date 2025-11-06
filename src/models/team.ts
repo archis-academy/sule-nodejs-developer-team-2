@@ -46,34 +46,27 @@ export const getTeamsForUser = async (userId: string) => {
 };
 
 export const getTeamById = async (teamId: string, userId: string) => {
-
   const isMember = await prisma.teamMember.findFirst({
-    where: {
-      teamId,
-      userId,
+    where: { teamId, userId },
+  });
+
+  if (!isMember) return null;
+  const team = await prisma.team.findUnique({
+    where: { id: teamId },
+    include: {
+      members: {
+        include: {
+          User: {
+            select: { id: true, name: true, email: true, role: true },
+          },
+        },
+      },
+      expenses: true,
     },
   });
 
-  if (isMember) {
-
-    const team = await prisma.team.findUnique({
-      where: { id: teamId },
-      include: {
-        members: {
-          include: {
-            User: {
-              select: { id: true, name: true, email: true, role: true },
-            },
-          },
-        },
-        expenses: true,
-      },
-    });
-
-    return team;
-  }
+  return team;
 };
-
 
 export const updateTeam = async (
   teamId: string,
@@ -89,19 +82,22 @@ export const updateTeam = async (
       },
     });
   }
+
+  return null; 
 };
 
 export const deleteTeam = async (teamId: string, userRole: string) => {
   if (userRole === Role.ADMIN) {
-    await prisma.teamMember.deleteMany({
-      where: { teamId },
-    });
-    await prisma.expense.deleteMany({
-      where: { teamId },
-    });
-
-    await prisma.team.delete({
-      where: { id: teamId },
-    });
+    await prisma.$transaction([
+      prisma.teamMember.deleteMany({
+        where: { teamId },
+      }),
+      prisma.expense.deleteMany({
+        where: { teamId },
+      }),
+      prisma.team.delete({
+        where: { id: teamId },
+      }),
+    ]);
   }
-};
+}

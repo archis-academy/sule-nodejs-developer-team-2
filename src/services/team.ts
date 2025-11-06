@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { CreateTeamDto, UpdateTeamDto } from "../dto/team/team";
 import * as teamModel from "../models/team";
 import { AppError } from "../utils/appError";
+import { Role } from "@prisma/client";
 
 class TeamService {
   async createTeam(data: CreateTeamDto, userId: string) {
@@ -59,8 +60,7 @@ class TeamService {
 
   async updateTeam(teamId: string, userRole: string, data: UpdateTeamDto) {
     try {
-      // ❗ Yetki kontrolü
-      if (userRole !== "ADMIN") {
+      if (userRole !== Role.ADMIN) {
         throw new AppError("Only admins can update team details.", 403);
       }
 
@@ -90,7 +90,7 @@ class TeamService {
   async deleteTeam(teamId: string, userRole: string) {
     try {
       // ❗ Yetki kontrolü
-      if (userRole !== "ADMIN") {
+      if (userRole !== Role.ADMIN) {
         throw new AppError("Only admins can delete teams.", 403);
       }
 
