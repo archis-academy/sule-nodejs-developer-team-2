@@ -45,6 +45,15 @@ class AuthService {
       refreshToken,
     };
   }
+  async logout(header: string) {
+    return await jwtService.logout(header);
+  }
+  async logoutAll(header: string) {
+    return await jwtService.logoutAll(header);
+  }
+  async refresh(header: string) {
+    return await jwtService.refresh(header);
+  }
 }
 
 const authService = new AuthService();
