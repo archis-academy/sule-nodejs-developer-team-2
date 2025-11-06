@@ -84,6 +84,9 @@ export const deleteTeam = async (teamId: string, userRole: string) => {
     await prisma.teamMember.deleteMany({
       where: { teamId },
     });
+    await prisma.expense.deleteMany({
+      where: { teamId },
+    });
 
     await prisma.team.delete({
       where: { id: teamId },
