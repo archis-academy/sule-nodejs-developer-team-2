@@ -11,10 +11,6 @@ export default function authorizeRole(
       res.status(401).json({ message: 'Unauthorized' });
       return;
     }
-    if (req.user.role === Role.ADMIN) {
-      next();
-      return;
-    }
     if (!roles.includes(req.user.role)) {
       res.status(403).json({ message: 'Forbidden' });
       return;

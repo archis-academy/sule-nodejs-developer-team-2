@@ -8,7 +8,7 @@ export interface JwtPayload {
 
 declare global {
   namespace Express {
-    interface Request {
+    interface Request extends Express.Request {
       user: JwtPayload;
     }
   }
