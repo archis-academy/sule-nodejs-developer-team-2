@@ -2,10 +2,20 @@ import { NextFunction, Request, Response } from 'express';
 import { Role } from '@prisma/client';
 import prisma from '../config/db';
 
-export default function authorizeRole(roles: Role[]) {
+export default function authorizeRole(
+  roles: Role[],
+  teamIdParamKey: string = 'id'
+) {
   return async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user || !roles.includes(req.user.role)) {
       res.status(403).json({ message: 'Forbidden' });
+      return;
+    }
+    const teamId = req.params[teamIdParamKey];
+    if (!teamId) {
+      res
+        .status(400)
+        .json({ message: `Team ID parameter '${teamIdParamKey}' is missing` });
       return;
     }
     const isTeamMember = await prisma.teamMember.findUnique({
