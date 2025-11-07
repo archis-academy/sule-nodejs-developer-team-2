@@ -7,6 +7,9 @@ export enum ValidationType {
   QUERY = 'query',
 }
 
+const uuidRegex =
+  /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+
 export const validate = (
   schema: z.ZodTypeAny,
   type: ValidationType = ValidationType.BODY
@@ -22,7 +25,11 @@ export const validate = (
       next();
     } catch (error) {
       if (error instanceof ZodError) {
-        res.status(400).json({ error: error.issues.map((e) => e.message) });
+        res.status(400).json({
+          error: error.issues.map(
+            (e) => `message: ${e.message}, path: ${e.path}`
+          ),
+        });
         return;
       }
       next(error);
@@ -41,14 +48,16 @@ export const validateParams = (schema: z.ZodTypeAny) =>
 export const validateQuery = (schema: z.ZodTypeAny) =>
   validate(schema, ValidationType.QUERY);
 
-export const validateId = validate(
-  z.object({
-    id: z
-      .string()
-      .regex(
-        /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/,
-        'A valid UUID format is required'
-      ),
-  }),
-  ValidationType.PARAMS
-);
+export const validateId = (...paramNames: string[]) => {
+  let combinedSchema = z.object({});
+
+  for (const paramName of paramNames) {
+    const paramSchema = z.object({
+      [paramName]: z
+        .string()
+        .regex(uuidRegex, `A valid UUID format is required for ${paramName}`),
+    });
+    combinedSchema = combinedSchema.merge(paramSchema);
+  }
+  return validateParams(combinedSchema);
+};

@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { AppError } from '../utils/appError';
 import teamService from '../services/team';
 import { CreateTeamDto } from '../dto/team/create.team';
+import { CreateTeamMemberDto } from '../dto/team/create.team-member';
 import { UpdateTeamDto } from '../dto/team/update.team';
 
 class TeamController {
@@ -36,9 +37,8 @@ class TeamController {
   }
   async getTeamById(req: Request<{ id: string }>, res: Response) {
     try {
-      const user = req.user;
       const { id } = req.params;
-      const team = await teamService.getTeamById(id, user.userId);
+      const team = await teamService.getTeamById(id, req.user.userId);
       res.status(200).json(team);
     } catch (error: unknown) {
       if (error instanceof AppError) {
@@ -68,6 +68,52 @@ class TeamController {
     try {
       const { id } = req.params;
       await teamService.deleteTeam(id);
+      res.status(204).send();
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({ message: error.message });
+      } else {
+        res.status(500).json({ message: 'Internal Server Error' });
+      }
+    }
+  }
+  async addMember(
+    req: Request<{ id: string }, Record<string, never>, CreateTeamMemberDto>,
+    res: Response
+  ) {
+    try {
+      const { id } = req.params;
+      const { userId } = req.body;
+      const team = await teamService.addMember(id, userId);
+      res.status(201).json(team);
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({ message: error.message });
+      } else {
+        res.status(500).json({ message: 'Internal Server Error' });
+      }
+    }
+  }
+  async getTeamMembers(req: Request<{ id: string }>, res: Response) {
+    try {
+      const { id } = req.params;
+      const team = await teamService.getTeamMembers(id);
+      res.status(200).json(team);
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({ message: error.message });
+      } else {
+        res.status(500).json({ message: 'Internal Server Error' });
+      }
+    }
+  }
+  async removeMember(
+    req: Request<{ id: string; userId: string }>,
+    res: Response
+  ) {
+    try {
+      const { id, userId } = req.params;
+      await teamService.removeMember(id, userId);
       res.status(204).send();
     } catch (error: unknown) {
       if (error instanceof AppError) {

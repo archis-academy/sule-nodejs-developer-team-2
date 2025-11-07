@@ -1,6 +1,8 @@
 import prisma from '../config/db';
 import { CreateTeamDto } from '../dto/team/create.team';
 import { UpdateTeamDto } from '../dto/team/update.team';
+import { Prisma } from '@prisma/client';
+
 class TeamModel {
   async createTeam(data: CreateTeamDto, userId: string) {
     return await prisma.team.create({
@@ -19,6 +21,14 @@ class TeamModel {
         name: true,
         description: true,
         createdBy: true,
+      },
+    });
+  }
+  async getTeamById(teamId: string, tx?: Prisma.TransactionClient) {
+    const client = prisma || tx;
+    return await client.team.findUnique({
+      where: {
+        id: teamId,
       },
     });
   }
@@ -49,13 +59,6 @@ class TeamModel {
             },
           },
         },
-      },
-    });
-  }
-  async getTeamById(teamId: string) {
-    return await prisma.team.findUnique({
-      where: {
-        id: teamId,
       },
     });
   }
@@ -95,6 +98,66 @@ class TeamModel {
     return await prisma.team.findUnique({
       where: {
         name: teamName,
+      },
+    });
+  }
+  async addMember(
+    teamId: string,
+    userId: string,
+    tx?: Prisma.TransactionClient
+  ) {
+    const client = prisma || tx;
+    return await client.teamMember.create({
+      data: {
+        teamId,
+        userId,
+      },
+    });
+  }
+  async removeMember(
+    teamId: string,
+    userId: string,
+    tx?: Prisma.TransactionClient
+  ) {
+    const client = prisma || tx;
+    return await client.teamMember.delete({
+      where: {
+        userId_teamId: {
+          userId,
+          teamId,
+        },
+      },
+    });
+  }
+  async getTeamMembers(teamId: string) {
+    return await prisma.teamMember.findMany({
+      where: {
+        teamId,
+      },
+      select: {
+        User: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+          },
+        },
+      },
+    });
+  }
+  async checkMembership(
+    teamId: string,
+    userId: string,
+    tx?: Prisma.TransactionClient
+  ) {
+    const client = prisma || tx;
+    return await client.teamMember.findUnique({
+      where: {
+        userId_teamId: {
+          userId,
+          teamId,
+        },
       },
     });
   }
