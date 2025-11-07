@@ -1,41 +1,36 @@
-import { Router } from "express";
-import authentication from "../middlewares/authentication";
-import {
-    validate,
-    validateId,
-} from "../middlewares/validation";
-import {
-    createTeamSchema,
-    updateTeamSchema,
-} from "../dto/team/team";
-import teamController from "../controllers/team";
+import { Router } from 'express';
+import authentication from '../middlewares/authentication';
+import authorizeRole from '../middlewares/authorization';
+import { validate, validateId } from '../middlewares/validation';
+import { createTeamSchema } from '../dto/team/create.team';
+import { updateTeamSchema } from '../dto/team/update.team';
+import teamController from '../controllers/team';
+import { Role } from '@prisma/client';
 
 const teamRouter = Router();
 
+teamRouter.use(authentication('access'));
+
 teamRouter.post(
-    "/",
-    authentication,
-    validate(createTeamSchema),
-    teamController.createTeam
+  '/',
+  authorizeRole([Role.ADMIN]),
+  validate(createTeamSchema),
+  teamController.createTeam
 );
-
-teamRouter.get("/", authentication, teamController.getTeams);
-
-teamRouter.get("/:id", authentication, validateId, teamController.getTeamById);
-
+teamRouter.get('/', teamController.getTeams);
+teamRouter.get('/:id', validateId, teamController.getTeamById);
 teamRouter.put(
-    "/:id",
-    authentication,
-    validateId,
-    validate(updateTeamSchema),
-    teamController.updateTeam
+  '/:id',
+  authorizeRole([Role.ADMIN]),
+  validateId,
+  validate(updateTeamSchema),
+  teamController.updateTeam
 );
-
 teamRouter.delete(
-    "/:id",
-    authentication,
-    validateId,
-    teamController.deleteTeam
+  '/:id',
+  authorizeRole([Role.ADMIN]),
+  validateId,
+  teamController.deleteTeam
 );
 
 export default teamRouter;

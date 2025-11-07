@@ -28,6 +28,7 @@ model User {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  createdTeams  Team[]
   teams         TeamMember[]
   expenses      Expense[]
   expenseSplits ExpenseSplit[]
@@ -39,14 +40,17 @@ model User {
 
 model Team {
   id          String  @id @default(uuid())
-  name        String @unique
+  name        String  @unique
   description String?
+  createdBy   String  @map("created_by")
 
   members  TeamMember[]
   expenses Expense[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [createdBy], references: [id], onDelete: Cascade)
 
   @@map("teams")
 }
@@ -66,12 +70,12 @@ model Expense {
   id                String  @id @default(uuid())
   teamId            String  @map("team_id")
   createdBy         String  @map("created_by")
-  expenseCategoryId String? @map("expense_category_id")
+  expenseCategoryId String  @map("expense_category_id")
   amount            Decimal
 
-  Team            Team             @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  Creator         User             @relation(fields: [createdBy], references: [id], onDelete: Cascade)
-  ExpenseCategory ExpenseCategory? @relation(fields: [expenseCategoryId], references: [id], onDelete: SetNull)
+  Team            Team            @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  Creator         User            @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  ExpenseCategory ExpenseCategory @relation(fields: [expenseCategoryId], references: [id], onDelete: Cascade)
 
   expenseSplits ExpenseSplit[]
 

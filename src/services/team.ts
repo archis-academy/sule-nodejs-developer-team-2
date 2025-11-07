@@ -1,116 +1,51 @@
-import { Prisma } from "@prisma/client";
-import { CreateTeamDto, UpdateTeamDto } from "../dto/team/team";
-import * as teamModel from "../models/team";
-import { AppError } from "../utils/appError";
-import { Role } from "@prisma/client";
+import { CreateTeamDto } from '../dto/team/create.team';
+import { UpdateTeamDto } from '../dto/team/update.team';
+import teamModel from '../models/team';
+import { AppError } from '../utils/appError';
 
 class TeamService {
+  private async checkTeamName(teamName: string) {
+    const existingTeam = await teamModel.getTeamByName(teamName);
+    if (existingTeam) {
+      throw new AppError('A team with this name already exists.', 409);
+    }
+  }
+  private async checkTeam(id: string) {
+    const team = await teamModel.getTeamById(id);
+    if (!team) {
+      throw new AppError('Team not found.', 404);
+    }
+    return team;
+  }
   async createTeam(data: CreateTeamDto, userId: string) {
-    try {
-      const team = await teamModel.createTeam(data, userId);
-      return team;
-    } catch (error: unknown) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        switch (error.code) {
-          case "P2002":
-            throw new AppError("A team with this name already exists.", 409);
-          case "P2003":
-            throw new AppError("Invalid user or team relation.", 400);
-          case "P2025":
-            throw new AppError("Team not found.", 404);
-          default:
-            throw new AppError(`Database error: ${error.code}`, 500);
-        }
-      }
-
-      if (error instanceof Error) {
-        console.error("[createTeam Error]:", error);
-        throw new AppError(error.message, 500);
-      }
-
-      throw new AppError("Failed to create team.", 500);
-    }
+    await this.checkTeamName(data.name);
+    const team = await teamModel.createTeam(data, userId);
+    return team;
   }
-
-  async getTeams(userId: string) {
-    try {
-      return await teamModel.getTeamsForUser(userId);
-    } catch (error: unknown) {
-      console.error("[getTeams Error]:", error);
-      throw new AppError("Failed to fetch teams.", 500);
-    }
-  }
-
   async getTeamById(teamId: string, userId: string) {
-    try {
-      const team = await teamModel.getTeamById(teamId, userId);
-      if (!team) throw new AppError("Team not found.", 404);
-      return team;
-    } catch (error: unknown) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
-        throw new AppError("Team not found.", 404);
-      }
-      if (error instanceof Error) {
-        console.error("[getTeamById Error]:", error);
-        throw new AppError(error.message, 404);
-      }
-      throw new AppError("Failed to fetch team details.", 500);
-    }
+    const team = await teamModel.getTeamByIdWithMembershipCheck(teamId, userId);
+    if (!team) throw new AppError('Team not found.', 404);
+    return team;
   }
-
-  async updateTeam(teamId: string, userRole: string, data: UpdateTeamDto) {
-    try {
-      if (userRole !== Role.ADMIN) {
-        throw new AppError("Only admins can update team details.", 403);
-      }
-
-      const team = await teamModel.updateTeam(teamId, data, userRole);
-      if (!team) {
-        throw new AppError("Team not found or update failed.", 404);
-      }
-
-      return team;
-    } catch (error: unknown) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        switch (error.code) {
-          case "P2025":
-            throw new AppError("Team not found.", 404);
-          default:
-            throw new AppError(`Database error: ${error.code}`, 500);
-        }
-      }
-      if (error instanceof Error) {
-        console.error("[updateTeam Error]:", error);
-        throw new AppError(error.message, 400);
-      }
-      throw new AppError("Failed to update team.", 500);
-    }
+  async getTeams(userId: string) {
+    const teams = await teamModel.getTeams(userId);
+    return teams;
   }
-
-  async deleteTeam(teamId: string, userRole: string) {
+  async updateTeam(teamId: string, data: UpdateTeamDto) {
+    await this.checkTeam(teamId);
+    if (data.name) {
+      await this.checkTeamName(data.name);
+    }
+    const updatedTeam = await teamModel.updateTeam(teamId, data);
+    return updatedTeam;
+  }
+  async deleteTeam(teamId: string) {
+    await this.checkTeam(teamId);
     try {
-      // ❗ Yetki kontrolü
-      if (userRole !== Role.ADMIN) {
-        throw new AppError("Only admins can delete teams.", 403);
-      }
-
-      await teamModel.deleteTeam(teamId, userRole);
-    } catch (error: unknown) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        switch (error.code) {
-          case "P2025":
-            throw new AppError("Team not found.", 404);
-          case "P2003":
-            throw new AppError("Cannot delete team with active relations.", 400);
-          default:
-            throw new AppError(`Database error: ${error.code}`, 500);
-        }
-      }
-      if (error instanceof Error) {
-        console.error("[deleteTeam Error]:", error);
-        throw new AppError(error.message, 400);
-      }
-      throw new AppError("Failed to delete team.", 500);
+      return await teamModel.deleteTeam(teamId);
+    } catch (error) {
+      console.error(error);
+      throw new AppError('An error occurred while deleting the team.', 500);
     }
   }
 }
