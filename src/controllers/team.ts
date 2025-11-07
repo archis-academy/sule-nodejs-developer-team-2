@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { AppError } from '../utils/appError';
 import teamService from '../services/team';
 import { CreateTeamDto } from '../dto/team/create.team';
+import { CreateTeamMemberDto } from '../dto/team/create.team-member';
 import { UpdateTeamDto } from '../dto/team/update.team';
 
 class TeamController {
@@ -76,9 +77,13 @@ class TeamController {
       }
     }
   }
-  async addMember(req: Request<{ id: string; userId: string }>, res: Response) {
+  async addMember(
+    req: Request<{ id: string }, Record<string, never>, CreateTeamMemberDto>,
+    res: Response
+  ) {
     try {
-      const { id, userId } = req.params;
+      const { id } = req.params;
+      const { userId } = req.body;
       const team = await teamService.addMember(id, userId);
       res.status(201).json(team);
     } catch (error: unknown) {

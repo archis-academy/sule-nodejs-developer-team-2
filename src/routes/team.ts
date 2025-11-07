@@ -4,6 +4,7 @@ import authorizeRole from '../middlewares/authorization';
 import authorizeMember from '../middlewares/authorizeMember';
 import { validateBody, validateId } from '../middlewares/validation';
 import { createTeamSchema } from '../dto/team/create.team';
+import { createTeamMemberSchema } from '../dto/team/create.team-member';
 import { updateTeamSchema } from '../dto/team/update.team';
 import teamController from '../controllers/team';
 import { Role } from '@prisma/client';
@@ -34,9 +35,10 @@ teamRouter.delete(
   teamController.deleteTeam
 );
 teamRouter.post(
-  '/:id/members/:userId',
+  '/:id/members',
   authorizeRole([Role.ADMIN]),
-  validateId('id', 'userId'),
+  validateId('id'),
+  validateBody(createTeamMemberSchema),
   teamController.addMember
 );
 teamRouter.get(
