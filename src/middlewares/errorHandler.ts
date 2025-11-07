@@ -36,7 +36,7 @@ const errorHandler = (
   } else if (error instanceof Error) {
     message = 'An unexpected error occurred.';
   }
-
+  console.error(error);
   res.status(statusCode).json({
     success: false,
     message: message,
