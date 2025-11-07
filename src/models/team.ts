@@ -22,7 +22,7 @@ class TeamModel {
       },
     });
   }
-  async getTeamById(teamId: string, userId: string) {
+  async getTeamByIdWithMembershipCheck(teamId: string, userId: string) {
     return await prisma.team.findFirst({
       where: {
         id: teamId,
@@ -49,6 +49,13 @@ class TeamModel {
             },
           },
         },
+      },
+    });
+  }
+  async getTeamById(teamId: string) {
+    return await prisma.team.findUnique({
+      where: {
+        id: teamId,
       },
     });
   }
@@ -81,6 +88,13 @@ class TeamModel {
     return await prisma.team.delete({
       where: {
         id: teamId,
+      },
+    });
+  }
+  async getTeamByName(teamName: string) {
+    return await prisma.team.findUnique({
+      where: {
+        name: teamName,
       },
     });
   }
