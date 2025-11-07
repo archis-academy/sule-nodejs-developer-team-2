@@ -1,6 +1,8 @@
 import prisma from '../config/db';
 import { CreateTeamDto } from '../dto/team/create.team';
 import { UpdateTeamDto } from '../dto/team/update.team';
+import { Prisma } from '@prisma/client';
+
 class TeamModel {
   async createTeam(data: CreateTeamDto, userId: string) {
     return await prisma.team.create({
@@ -22,8 +24,9 @@ class TeamModel {
       },
     });
   }
-  async getTeamById(teamId: string) {
-    return await prisma.team.findUnique({
+  async getTeamById(teamId: string, tx?: Prisma.TransactionClient) {
+    const client = prisma || tx;
+    return await client.team.findUnique({
       where: {
         id: teamId,
       },
@@ -98,16 +101,26 @@ class TeamModel {
       },
     });
   }
-  async addMember(teamId: string, userId: string) {
-    return await prisma.teamMember.create({
+  async addMember(
+    teamId: string,
+    userId: string,
+    tx?: Prisma.TransactionClient
+  ) {
+    const client = prisma || tx;
+    return await client.teamMember.create({
       data: {
         teamId,
         userId,
       },
     });
   }
-  async removeMember(teamId: string, userId: string) {
-    return await prisma.teamMember.delete({
+  async removeMember(
+    teamId: string,
+    userId: string,
+    tx?: Prisma.TransactionClient
+  ) {
+    const client = prisma || tx;
+    return await client.teamMember.delete({
       where: {
         userId_teamId: {
           userId,
@@ -133,8 +146,13 @@ class TeamModel {
       },
     });
   }
-  async checkMembership(teamId: string, userId: string) {
-    return await prisma.teamMember.findUnique({
+  async checkMembership(
+    teamId: string,
+    userId: string,
+    tx?: Prisma.TransactionClient
+  ) {
+    const client = prisma || tx;
+    return await client.teamMember.findUnique({
       where: {
         userId_teamId: {
           userId,

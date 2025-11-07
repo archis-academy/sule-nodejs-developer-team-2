@@ -2,7 +2,8 @@ import { CreateTeamDto } from '../dto/team/create.team';
 import { UpdateTeamDto } from '../dto/team/update.team';
 import teamModel from '../models/team';
 import { AppError } from '../utils/appError';
-
+import { Prisma } from '@prisma/client';
+import prisma from '../config/db';
 class TeamService {
   private async checkTeamName(teamName: string) {
     const existingTeam = await teamModel.getTeamByName(teamName);
@@ -10,15 +11,19 @@ class TeamService {
       throw new AppError('A team with this name already exists.', 409);
     }
   }
-  private async checkTeam(id: string) {
-    const team = await teamModel.getTeamById(id);
+  private async checkTeam(id: string, tx?: Prisma.TransactionClient) {
+    const team = await teamModel.getTeamById(id, tx);
     if (!team) {
       throw new AppError('Team not found.', 404);
     }
     return team;
   }
-  private async checkMembership(teamId: string, userId: string) {
-    const isMember = await teamModel.checkMembership(teamId, userId);
+  private async checkMembership(
+    teamId: string,
+    userId: string,
+    tx?: Prisma.TransactionClient
+  ) {
+    const isMember = await teamModel.checkMembership(teamId, userId, tx);
     return isMember;
   }
   async createTeam(data: CreateTeamDto, userId: string) {
@@ -55,24 +60,28 @@ class TeamService {
     }
   }
   async addMember(teamId: string, userId: string) {
-    await this.checkTeam(teamId);
-    const isMember = await this.checkMembership(teamId, userId);
-    if (isMember) {
-      throw new AppError('User is already a member of this team.', 409);
-    }
-    return await teamModel.addMember(teamId, userId);
+    await prisma.$transaction(async (tx) => {
+      await this.checkTeam(teamId, tx);
+      const isMember = await this.checkMembership(teamId, userId, tx);
+      if (isMember) {
+        throw new AppError('User is already a member of this team.', 409);
+      }
+      return await teamModel.addMember(teamId, userId, tx);
+    });
   }
   async getTeamMembers(teamId: string) {
     await this.checkTeam(teamId);
     return await teamModel.getTeamMembers(teamId);
   }
   async removeMember(teamId: string, userId: string) {
-    await this.checkTeam(teamId);
-    const isMember = await this.checkMembership(teamId, userId);
-    if (!isMember) {
-      throw new AppError('User is not a member of this team.', 403);
-    }
-    return await teamModel.removeMember(teamId, userId);
+    await prisma.$transaction(async (tx) => {
+      await this.checkTeam(teamId, tx);
+      const isMember = await this.checkMembership(teamId, userId, tx);
+      if (!isMember) {
+        throw new AppError('User is not a member of this team.', 403);
+      }
+      return await teamModel.removeMember(teamId, userId, tx);
+    });
   }
 }
 
