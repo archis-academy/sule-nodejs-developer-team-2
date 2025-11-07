@@ -1,103 +1,90 @@
-import prisma from "../config/db";
-import { Role } from "@prisma/client";
-import { CreateTeamDto, UpdateTeamDto } from "../dto/team/team";
-
-export const createTeam = async (data: CreateTeamDto, userId: string) => {
-  const existingTeam = await prisma.team.findFirst({
-    where: { name: data.name },
-  });
-
-  if (!existingTeam) {
-    const team = await prisma.team.create({
+import prisma from '../config/db';
+import { CreateTeamDto } from '../dto/team/create.team';
+import { UpdateTeamDto } from '../dto/team/update.team';
+class TeamModel {
+  async createTeam(data: CreateTeamDto, userId: string) {
+    return await prisma.team.create({
       data: {
         name: data.name,
         description: data.description,
-      },
-    });
-
-    await prisma.teamMember.create({
-      data: {
-        userId,
-        teamId: team.id,
-      },
-    });
-
-    return team;
-  }
-};
-
-export const getTeamsForUser = async (userId: string) => {
-  return await prisma.team.findMany({
-    where: {
-      members: {
-        some: { userId },
-      },
-    },
-    include: {
-      members: {
-        include: {
-          User: {
-            select: { id: true, name: true, email: true, role: true },
+        createdBy: userId,
+        members: {
+          create: {
+            userId,
           },
         },
       },
-    },
-  });
-};
-
-export const getTeamById = async (teamId: string, userId: string) => {
-  const isMember = await prisma.teamMember.findFirst({
-    where: { teamId, userId },
-  });
-
-  if (!isMember) return null;
-  const team = await prisma.team.findUnique({
-    where: { id: teamId },
-    include: {
-      members: {
-        include: {
-          User: {
-            select: { id: true, name: true, email: true, role: true },
-          },
-        },
-      },
-      expenses: true,
-    },
-  });
-
-  return team;
-};
-
-export const updateTeam = async (
-  teamId: string,
-  data: UpdateTeamDto,
-  userRole: string
-) => {
-  if (userRole === Role.ADMIN) {
-    return prisma.team.update({
-      where: { id: teamId },
-      data: {
-        name: data.name ?? undefined,
-        description: data.description ?? undefined,
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        createdBy: true,
       },
     });
   }
-
-  return null; 
-};
-
-export const deleteTeam = async (teamId: string, userRole: string) => {
-  if (userRole === Role.ADMIN) {
-    await prisma.$transaction([
-      prisma.teamMember.deleteMany({
-        where: { teamId },
-      }),
-      prisma.expense.deleteMany({
-        where: { teamId },
-      }),
-      prisma.team.delete({
-        where: { id: teamId },
-      }),
-    ]);
+  async getTeamById(teamId: string, userId: string) {
+    return await prisma.team.findFirst({
+      where: {
+        id: teamId,
+        members: {
+          some: {
+            userId,
+          },
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        createdBy: true,
+        members: {
+          select: {
+            User: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+  async getTeams(userId: string) {
+    return await prisma.team.findMany({
+      where: {
+        members: {
+          some: {
+            userId: userId,
+          },
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        createdBy: true,
+      },
+    });
+  }
+  async updateTeam(teamId: string, data: UpdateTeamDto) {
+    return await prisma.team.update({
+      where: {
+        id: teamId,
+      },
+      data,
+    });
+  }
+  async deleteTeam(teamId: string) {
+    return await prisma.team.delete({
+      where: {
+        id: teamId,
+      },
+    });
   }
 }
+
+const teamModel = new TeamModel();
+export default teamModel;
