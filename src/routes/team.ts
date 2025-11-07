@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import authentication from '../middlewares/authentication';
 import authorizeRole from '../middlewares/authorization';
-import { validate, validateId } from '../middlewares/validation';
+import authorizeMember from '../middlewares/authorizeMember';
+import { validateBody, validateId } from '../middlewares/validation';
 import { createTeamSchema } from '../dto/team/create.team';
 import { updateTeamSchema } from '../dto/team/update.team';
 import teamController from '../controllers/team';
@@ -14,23 +15,41 @@ teamRouter.use(authentication('access'));
 teamRouter.post(
   '/',
   authorizeRole([Role.ADMIN]),
-  validate(createTeamSchema),
+  validateBody(createTeamSchema),
   teamController.createTeam
 );
 teamRouter.get('/', teamController.getTeams);
-teamRouter.get('/:id', validateId, teamController.getTeamById);
+teamRouter.get('/:id', validateId('id'), teamController.getTeamById);
 teamRouter.put(
   '/:id',
   authorizeRole([Role.ADMIN]),
-  validateId,
-  validate(updateTeamSchema),
+  validateId('id'),
+  validateBody(updateTeamSchema),
   teamController.updateTeam
 );
 teamRouter.delete(
   '/:id',
   authorizeRole([Role.ADMIN]),
-  validateId,
+  validateId('id'),
   teamController.deleteTeam
+);
+teamRouter.post(
+  '/:id/members/:userId',
+  authorizeRole([Role.ADMIN]),
+  validateId('id', 'userId'),
+  teamController.addMember
+);
+teamRouter.get(
+  '/:id/members',
+  validateId('id'),
+  authorizeMember('id'),
+  teamController.getTeamMembers
+);
+teamRouter.delete(
+  '/:id/members/:userId',
+  authorizeRole([Role.ADMIN]),
+  validateId('id', 'userId'),
+  teamController.removeMember
 );
 
 export default teamRouter;

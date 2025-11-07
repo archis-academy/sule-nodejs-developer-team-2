@@ -1,6 +1,7 @@
 import { CreateTeamDto } from '../dto/team/create.team';
 import { UpdateTeamDto } from '../dto/team/update.team';
 import teamModel from '../models/team';
+import userService from './user';
 import { AppError } from '../utils/appError';
 
 class TeamService {
@@ -17,15 +18,21 @@ class TeamService {
     }
     return team;
   }
+  private async checkMembership(teamId: string, userId: string) {
+    const isMember = await teamModel.checkMembership(teamId, userId);
+    return isMember;
+  }
   async createTeam(data: CreateTeamDto, userId: string) {
     await this.checkTeamName(data.name);
     const team = await teamModel.createTeam(data, userId);
     return team;
   }
   async getTeamById(teamId: string, userId: string) {
-    const team = await teamModel.getTeamByIdWithMembershipCheck(teamId, userId);
-    if (!team) throw new AppError('Team not found.', 404);
-    return team;
+    const isMember = await this.checkMembership(teamId, userId);
+    if (!isMember) {
+      throw new AppError('You are not a member of this team.', 403);
+    }
+    return await this.checkTeam(teamId);
   }
   async getTeams(userId: string) {
     const teams = await teamModel.getTeams(userId);
@@ -47,6 +54,28 @@ class TeamService {
       console.error(error);
       throw new AppError('An error occurred while deleting the team.', 500);
     }
+  }
+  async addMember(teamId: string, userId: string) {
+    await this.checkTeam(teamId);
+    await userService.getUserById(userId);
+    const isMember = await this.checkMembership(teamId, userId);
+    if (isMember) {
+      throw new AppError('User is already a member of this team.', 409);
+    }
+    return await teamModel.addMember(teamId, userId);
+  }
+  async getTeamMembers(teamId: string) {
+    await this.checkTeam(teamId);
+    return await teamModel.getTeamMembers(teamId);
+  }
+  async removeMember(teamId: string, userId: string) {
+    await this.checkTeam(teamId);
+    await userService.getUserById(userId);
+    const isMember = await this.checkMembership(teamId, userId);
+    if (!isMember) {
+      throw new AppError('User is not a member of this team.', 403);
+    }
+    return await teamModel.removeMember(teamId, userId);
   }
 }
 
