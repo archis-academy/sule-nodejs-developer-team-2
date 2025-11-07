@@ -30,7 +30,7 @@ const errorHandler = (
         statusCode = 404;
         break;
       default:
-        message = `Database Error: ${error.message}`;
+        message = `An error occurred while accessing the database`;
         break;
     }
   } else if (error instanceof Error) {
