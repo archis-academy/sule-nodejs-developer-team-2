@@ -38,7 +38,6 @@ class TeamController {
     try {
       const user = req.user;
       const { id } = req.params;
-
       const team = await teamService.getTeamById(id, user.userId);
       res.status(200).json(team);
     } catch (error: unknown) {
