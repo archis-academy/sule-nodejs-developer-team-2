@@ -42,8 +42,7 @@ class TeamService {
   async deleteTeam(teamId: string) {
     await this.checkTeam(teamId);
     try {
-      await teamModel.deleteTeam(teamId);
-      return 'Team deleted successfully.';
+      return await teamModel.deleteTeam(teamId);
     } catch (error) {
       console.error(error);
       throw new AppError('An error occurred while deleting the team.', 500);

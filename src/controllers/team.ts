@@ -67,8 +67,8 @@ class TeamController {
   async deleteTeam(req: Request<{ id: string }>, res: Response) {
     try {
       const { id } = req.params;
-      const deletedTeam = await teamService.deleteTeam(id);
-      res.status(204).json(deletedTeam);
+      await teamService.deleteTeam(id);
+      res.status(204).send();
     } catch (error: unknown) {
       if (error instanceof AppError) {
         res.status(error.statusCode).json({ message: error.message });
