@@ -29,6 +29,36 @@ class TeamModel {
       },
     });
   }
+  async getTeamByIdWithMembershipCheck(teamId: string, userId: string) {
+    return await prisma.team.findFirst({
+      where: {
+        id: teamId,
+        members: {
+          some: {
+            userId,
+          },
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        createdBy: true,
+        members: {
+          select: {
+            User: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
   async getTeams(userId: string) {
     return await prisma.team.findMany({
       where: {

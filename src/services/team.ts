@@ -1,7 +1,6 @@
 import { CreateTeamDto } from '../dto/team/create.team';
 import { UpdateTeamDto } from '../dto/team/update.team';
 import teamModel from '../models/team';
-import userService from './user';
 import { AppError } from '../utils/appError';
 
 class TeamService {
@@ -28,11 +27,11 @@ class TeamService {
     return team;
   }
   async getTeamById(teamId: string, userId: string) {
-    const isMember = await this.checkMembership(teamId, userId);
-    if (!isMember) {
-      throw new AppError('You are not a member of this team.', 403);
+    const team = await teamModel.getTeamByIdWithMembershipCheck(teamId, userId);
+    if (!team || team.members.length === 0) {
+      throw new AppError('Team not found.', 404);
     }
-    return await this.checkTeam(teamId);
+    return team;
   }
   async getTeams(userId: string) {
     const teams = await teamModel.getTeams(userId);
@@ -57,7 +56,6 @@ class TeamService {
   }
   async addMember(teamId: string, userId: string) {
     await this.checkTeam(teamId);
-    await userService.getUserById(userId);
     const isMember = await this.checkMembership(teamId, userId);
     if (isMember) {
       throw new AppError('User is already a member of this team.', 409);
@@ -70,7 +68,6 @@ class TeamService {
   }
   async removeMember(teamId: string, userId: string) {
     await this.checkTeam(teamId);
-    await userService.getUserById(userId);
     const isMember = await this.checkMembership(teamId, userId);
     if (!isMember) {
       throw new AppError('User is not a member of this team.', 403);
