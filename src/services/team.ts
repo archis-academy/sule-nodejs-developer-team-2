@@ -10,15 +10,15 @@ class TeamService {
       throw new AppError('A team with this name already exists.', 409);
     }
   }
-  private checkTeam(id: string) {
-    const team = teamModel.getTeamById(id);
+  private async checkTeam(id: string) {
+    const team = await teamModel.getTeamById(id);
     if (!team) {
       throw new AppError('Team not found.', 404);
     }
     return team;
   }
   async createTeam(data: CreateTeamDto, userId: string) {
-    this.checkTeamName(data.name);
+    await this.checkTeamName(data.name);
     const team = await teamModel.createTeam(data, userId);
     return team;
   }
