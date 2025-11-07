@@ -34,7 +34,7 @@ const errorHandler = (
         break;
     }
   } else if (error instanceof Error) {
-    message = error.message;
+    message = 'An unexpected error occurred.';
   }
 
   res.status(statusCode).json({
