@@ -28,6 +28,7 @@ model User {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  team          Team[]
   teams         TeamMember[]
   expenses      Expense[]
   expenseSplits ExpenseSplit[]
@@ -39,14 +40,17 @@ model User {
 
 model Team {
   id          String  @id @default(uuid())
-  name        String @unique
+  name        String  @unique
   description String?
+  createdBy   String? @map("created_by")
 
   members  TeamMember[]
   expenses Expense[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User? @relation(fields: [createdBy], references: [id], onDelete: SetNull)
 
   @@map("teams")
 }
