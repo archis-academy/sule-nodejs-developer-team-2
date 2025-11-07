@@ -34,6 +34,7 @@ const errorHandler = (
         break;
     }
   } else if (error instanceof Error) {
+    statusCode = 500;
     message = 'An unexpected error occurred.';
   }
   console.error(error);
