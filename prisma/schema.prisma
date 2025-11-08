@@ -44,8 +44,9 @@ model Team {
   description String?
   createdBy   String  @map("created_by")
 
-  members  TeamMember[]
-  expenses Expense[]
+  members    TeamMember[]
+  expenses   Expense[]
+  categories ExpenseCategory[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -86,14 +87,18 @@ model Expense {
 }
 
 model ExpenseCategory {
-  id   String @id @default(uuid())
-  name String
+  id     String @id @default(uuid())
+  teamId String
+  name   String
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   expenses Expense[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  @@unique([teamId, name])
   @@map("expense_categories")
 }
 

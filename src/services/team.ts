@@ -11,7 +11,7 @@ class TeamService {
       throw new AppError('A team with this name already exists.', 409);
     }
   }
-  private async checkTeam(id: string, tx?: Prisma.TransactionClient) {
+  async checkTeam(id: string, tx?: Prisma.TransactionClient) {
     const team = await teamModel.getTeamById(id, tx);
     if (!team) {
       throw new AppError('Team not found.', 404);
