@@ -18,8 +18,9 @@ class CategoryService {
       teamId,
       categoryName
     );
-    if (categoryId && existCategory && existCategory.id !== categoryId)
+    if (existCategory && (!categoryId || existCategory.id !== categoryId)) {
       throw new AppError('Category already exists.', 409);
+    }
   }
   async createCategory(teamId: string, data: CreateCategoryDto) {
     await teamService.checkTeam(teamId);
@@ -41,7 +42,6 @@ class CategoryService {
     await this.getCategoryById(teamId, categoryId);
     await this.getCategoryByName(teamId, data.name, categoryId);
     const updatedCategory = await categoryModel.updateCategory(
-      teamId,
       categoryId,
       data
     );
@@ -50,10 +50,7 @@ class CategoryService {
   async deleteCategory(teamId: string, categoryId: string) {
     await teamService.checkTeam(teamId);
     await this.getCategoryById(teamId, categoryId);
-    const deletedCategory = await categoryModel.deleteCategory(
-      teamId,
-      categoryId
-    );
+    const deletedCategory = await categoryModel.deleteCategory(categoryId);
     return deletedCategory;
   }
 }

@@ -31,26 +31,20 @@ class CategoryModel {
       where: { teamId_name: { teamId, name: categoryName } },
     });
   }
-  async updateCategory(
-    teamId: string,
-    categoryId: string,
-    data: UpdateCategoryDto
-  ) {
+  async updateCategory(id: string, data: UpdateCategoryDto) {
     return await prisma.expenseCategory.update({
       where: {
-        id: categoryId,
-        teamId,
+        id,
       },
       data: {
         name: data.name,
       },
     });
   }
-  async deleteCategory(teamId: string, categoryId: string) {
+  async deleteCategory(id: string) {
     return await prisma.expenseCategory.delete({
       where: {
-        id: categoryId,
-        teamId,
+        id,
       },
     });
   }
