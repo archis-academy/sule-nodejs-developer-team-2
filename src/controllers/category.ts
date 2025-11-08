@@ -12,8 +12,7 @@ class CategoryController {
     try {
       const { id } = req.params;
       const { name } = req.body;
-      const teamId = id;
-      const category = await categoryService.createCategory(teamId, { name });
+      const category = await categoryService.createCategory(id, { name });
       res.status(201).json(category);
     } catch (error) {
       if (error instanceof AppError) {
@@ -26,8 +25,7 @@ class CategoryController {
   async getTeamCategories(req: Request<{ id: string }>, res: Response) {
     try {
       const { id } = req.params;
-      const teamId = id;
-      const categories = await categoryService.getTeamCategories(teamId);
+      const categories = await categoryService.getTeamCategories(id);
       res.status(200).json(categories);
     } catch (error) {
       if (error instanceof AppError) {
