@@ -7,7 +7,10 @@ import { createTeamSchema } from '../dto/team/create.team';
 import { createTeamMemberSchema } from '../dto/team/create.team-member';
 import { updateTeamSchema } from '../dto/team/update.team';
 import teamController from '../controllers/team';
+import categoryController from '../controllers/category';
 import { Role } from '@prisma/client';
+import { UpdateCategorySchema } from '../dto/category/update.category';
+import { CreateCategorySchema } from '../dto/category/create.category';
 
 const teamRouter = Router();
 
@@ -53,5 +56,29 @@ teamRouter.delete(
   validateId('id', 'userId'),
   teamController.removeMember
 );
-
+teamRouter.post(
+  '/:id/categories',
+  authorizeRole([Role.ADMIN]),
+  validateId('id'),
+  validateBody(CreateCategorySchema),
+  categoryController.createCategory
+);
+teamRouter.get(
+  '/:id/categories',
+  validateId('id'),
+  categoryController.getTeamCategories
+);
+teamRouter.put(
+  '/:id/categories/:categoryId',
+  authorizeRole([Role.ADMIN]),
+  validateId('id', 'categoryId'),
+  validateBody(UpdateCategorySchema),
+  categoryController.updateCategory
+);
+teamRouter.delete(
+  '/:id/categories/:categoryId',
+  authorizeRole([Role.ADMIN]),
+  validateId('id', 'categoryId'),
+  categoryController.deleteCategory
+);
 export default teamRouter;
