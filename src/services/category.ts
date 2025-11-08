@@ -9,12 +9,17 @@ class CategoryService {
     const category = await categoryModel.getCategoryById(teamId, categoryId);
     if (!category) throw new AppError('Category not found.', 404);
   }
-  private async getCategoryByName(teamId: string, categoryName: string) {
+  private async getCategoryByName(
+    teamId: string,
+    categoryName: string,
+    categoryId?: string
+  ) {
     const existCategory = await categoryModel.getCategoryByName(
       teamId,
       categoryName
     );
-    if (existCategory) throw new AppError('Category already exists.', 409);
+    if (categoryId && existCategory && existCategory.id !== categoryId)
+      throw new AppError('Category already exists.', 409);
   }
   async createCategory(teamId: string, data: CreateCategoryDto) {
     await teamService.checkTeam(teamId);
@@ -34,7 +39,7 @@ class CategoryService {
   ) {
     await teamService.checkTeam(teamId);
     await this.getCategoryById(teamId, categoryId);
-    await this.getCategoryByName(teamId, data.name);
+    await this.getCategoryByName(teamId, data.name, categoryId);
     const updatedCategory = await categoryModel.updateCategory(
       teamId,
       categoryId,
