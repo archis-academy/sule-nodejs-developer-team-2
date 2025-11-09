@@ -2,7 +2,7 @@ import prisma from '../config/db';
 import { CreateCategoryDto } from '../dto/category/create.category';
 import { UpdateCategoryDto } from '../dto/category/update.category';
 
-class CategoryModel {
+class CategoryRepository {
   async createCategory(teamId: string, data: CreateCategoryDto) {
     return await prisma.expenseCategory.create({
       data: {
@@ -50,5 +50,5 @@ class CategoryModel {
   }
 }
 
-const categoryModel = new CategoryModel();
-export default categoryModel;
+const categoryRepository = new CategoryRepository();
+export default categoryRepository;

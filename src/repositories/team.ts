@@ -3,7 +3,7 @@ import { CreateTeamDto } from '../dto/team/create.team';
 import { UpdateTeamDto } from '../dto/team/update.team';
 import { Prisma } from '@prisma/client';
 
-class TeamModel {
+class TeamRepository {
   async createTeam(data: CreateTeamDto, userId: string) {
     return await prisma.team.create({
       data: {
@@ -25,7 +25,7 @@ class TeamModel {
     });
   }
   async getTeamById(teamId: string, tx?: Prisma.TransactionClient) {
-    const client = prisma || tx;
+    const client = tx || prisma;
     return await client.team.findUnique({
       where: {
         id: teamId,
@@ -106,7 +106,7 @@ class TeamModel {
     userId: string,
     tx?: Prisma.TransactionClient
   ) {
-    const client = prisma || tx;
+    const client = tx || prisma;
     return await client.teamMember.create({
       data: {
         teamId,
@@ -119,7 +119,7 @@ class TeamModel {
     userId: string,
     tx?: Prisma.TransactionClient
   ) {
-    const client = prisma || tx;
+    const client = tx || prisma;
     return await client.teamMember.delete({
       where: {
         userId_teamId: {
@@ -151,7 +151,7 @@ class TeamModel {
     userId: string,
     tx?: Prisma.TransactionClient
   ) {
-    const client = prisma || tx;
+    const client = tx || prisma;
     return await client.teamMember.findUnique({
       where: {
         userId_teamId: {
@@ -183,5 +183,5 @@ class TeamModel {
   }
 }
 
-const teamModel = new TeamModel();
-export default teamModel;
+const teamRepository = new TeamRepository();
+export default teamRepository;

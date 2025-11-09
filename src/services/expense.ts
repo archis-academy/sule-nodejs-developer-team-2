@@ -2,7 +2,7 @@ import {
   CreateExpenseDto,
   splitMembersType,
 } from '../dto/expense/create.expense';
-import expenseModel from '../models/expense';
+import expenseRepository from '../repositories/expense';
 import teamService from './team';
 import categoryService from './category';
 import { AppError } from '../utils/appError';
@@ -61,7 +61,7 @@ class ExpenseService {
     }));
 
     const { categoryId, amount, title, date } = data;
-    const expense = await expenseModel.createExpense(
+    const expense = await expenseRepository.createExpense(
       teamId,
       userId,
       { categoryId, amount, title, date },
@@ -87,7 +87,7 @@ class ExpenseService {
       throw new AppError(`${userId} is not a member of this team.`, 403);
     }
 
-    return await expenseModel.getExpenses(teamId, filters);
+    return await expenseRepository.getExpenses(teamId, filters);
   }
 }
 
