@@ -68,14 +68,16 @@ model TeamMember {
 }
 
 model Expense {
-  id                String  @id @default(uuid())
-  teamId            String  @map("team_id")
-  createdBy         String  @map("created_by")
-  expenseCategoryId String  @map("expense_category_id")
+  id                String   @id @default(uuid())
+  teamId            String   @map("team_id")
+  paidBy            String   @map("created_by")
+  expenseCategoryId String   @map("expense_category_id")
+  title             String
   amount            Decimal
+  date              DateTime @default(now())
 
   Team            Team            @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  Creator         User            @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  Creator         User            @relation(fields: [paidBy], references: [id], onDelete: Cascade)
   ExpenseCategory ExpenseCategory @relation(fields: [expenseCategoryId], references: [id], onDelete: Cascade)
 
   expenseSplits ExpenseSplit[]

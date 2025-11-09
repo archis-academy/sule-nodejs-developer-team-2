@@ -18,7 +18,7 @@ class TeamService {
     }
     return team;
   }
-  private async checkMembership(
+  async checkMembership(
     teamId: string,
     userId: string,
     tx?: Prisma.TransactionClient
@@ -82,6 +82,11 @@ class TeamService {
       }
       return await teamModel.removeMember(teamId, userId, tx);
     });
+  }
+  async checkTeamMembers(teamId: string, userIds: string[]) {
+    await this.checkTeam(teamId);
+    const teamMembers = await teamModel.checkTeamMembers(teamId, userIds);
+    return teamMembers;
   }
 }
 
