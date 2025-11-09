@@ -4,7 +4,8 @@ import {
   splitMembersType,
 } from '../dto/expense/create.expense';
 import { Prisma } from '@prisma/client';
-class ExpenseModel {
+
+class ExpenseRepository {
   async createExpense(
     teamId: string,
     userId: string,
@@ -107,5 +108,5 @@ class ExpenseModel {
   }
 }
 
-const expenseModel = new ExpenseModel();
-export default expenseModel;
+const expenseRepository = new ExpenseRepository();
+export default expenseRepository;

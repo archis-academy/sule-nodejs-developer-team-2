@@ -1,7 +1,7 @@
 import prisma from '../config/db';
 import { CreateUserDto } from '../dto/user/create.user';
 
-class UserModel {
+class UserRepository {
   async createUser(data: CreateUserDto) {
     return await prisma.user.create({
       data,
@@ -52,5 +52,5 @@ class UserModel {
   }
 }
 
-const userModel = new UserModel();
-export default userModel;
+const userRepository = new UserRepository();
+export default userRepository;
