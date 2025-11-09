@@ -161,6 +161,26 @@ class TeamModel {
       },
     });
   }
+  async checkTeamMembers(teamId: string, userIds: string[]) {
+    return await prisma.teamMember.findMany({
+      where: {
+        teamId,
+        userId: {
+          in: userIds,
+        },
+      },
+      select: {
+        User: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+          },
+        },
+      },
+    });
+  }
 }
 
 const teamModel = new TeamModel();

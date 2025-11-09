@@ -5,7 +5,7 @@ import teamService from './team';
 import { AppError } from '../utils/appError';
 
 class CategoryService {
-  private async getCategoryById(teamId: string, categoryId: string) {
+  async getCategoryById(teamId: string, categoryId: string) {
     const category = await categoryModel.getCategoryById(teamId, categoryId);
     if (!category) throw new AppError('Category not found.', 404);
   }

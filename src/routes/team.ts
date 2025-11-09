@@ -8,9 +8,11 @@ import { createTeamMemberSchema } from '../dto/team/create.team-member';
 import { updateTeamSchema } from '../dto/team/update.team';
 import teamController from '../controllers/team';
 import categoryController from '../controllers/category';
+import expenseController from '../controllers/expense';
 import { Role } from '@prisma/client';
 import { UpdateCategorySchema } from '../dto/category/update.category';
 import { CreateCategorySchema } from '../dto/category/create.category';
+import { CreateExpenseSchema } from '../dto/expense/create.expense';
 
 const teamRouter = Router();
 
@@ -81,4 +83,11 @@ teamRouter.delete(
   validateId('id', 'categoryId'),
   categoryController.deleteCategory
 );
+teamRouter.post(
+  '/:id/expenses',
+  validateId('id'),
+  validateBody(CreateExpenseSchema),
+  expenseController.createExpense
+);
+
 export default teamRouter;
