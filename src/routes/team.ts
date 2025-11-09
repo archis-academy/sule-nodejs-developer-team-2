@@ -86,8 +86,15 @@ teamRouter.delete(
 teamRouter.post(
   '/:id/expenses',
   validateId('id'),
+  authorizeMember('id'),
   validateBody(CreateExpenseSchema),
   expenseController.createExpense
+);
+teamRouter.get(
+  '/:id/expenses',
+  validateId('id'),
+  authorizeMember('id'),
+  expenseController.getExpenses
 );
 
 export default teamRouter;

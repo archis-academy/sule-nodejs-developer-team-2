@@ -9,17 +9,17 @@ export const CreateExpenseSchema = z.object({
     .number('Expense amount must be a number.')
     .min(1, 'Expense amount cannot be empty.')
     .positive('Expense amount must be greater than 0.'),
-  date: z
+  date: z.coerce
     .date()
     .optional()
     .refine((date) => {
       if (!date) return true;
-      const now = new Date().getTime();
-      if (new Date(date).getTime() > now) {
+      const now = new Date();
+      if (new Date(date) > now) {
         return false;
       }
       return true;
-    }, 'Expense date must be in the future.'),
+    }, 'Expense date cannot be in the future.'),
   categoryId: z.uuid('Expense category id must be a valid UUID.'),
   splitMembers: z
     .array(z.uuid('Expense split member id must be a valid UUID.'))

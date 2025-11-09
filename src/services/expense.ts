@@ -10,10 +10,6 @@ import { AppError } from '../utils/appError';
 class ExpenseService {
   async createExpense(teamId: string, userId: string, data: CreateExpenseDto) {
     await teamService.checkTeam(teamId);
-    const payer = await teamService.checkMembership(teamId, userId);
-    if (!payer) {
-      throw new AppError('You are not a member of this team.', 403);
-    }
     await categoryService.getCategoryById(teamId, data.categoryId);
     let membersToSplitBetween: string[];
 
@@ -45,13 +41,34 @@ class ExpenseService {
         amount: data.amount / membersToSplitBetween.length,
       })
     );
+    const { categoryId, amount, title, date, ...rest } = data;
     const expense = await expenseModel.createExpense(
       teamId,
       userId,
-      data,
+      { categoryId, amount, title, date },
       splitMembers
     );
     return expense;
+  }
+  async getExpenses(
+    teamId: string,
+    userId: string,
+    filters: {
+      page: number;
+      limit: number;
+      category?: string;
+      member?: string;
+      startDate?: Date;
+      endDate?: Date;
+    }
+  ) {
+    await teamService.checkTeam(teamId);
+    const isMember = await teamService.checkMembership(teamId, userId);
+    if (!isMember) {
+      throw new AppError(`${userId} is not a member of this team.`, 403);
+    }
+
+    return await expenseModel.getExpenses(teamId, filters);
   }
 }
 
