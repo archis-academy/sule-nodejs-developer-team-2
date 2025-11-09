@@ -8,6 +8,23 @@ import categoryService from './category';
 import { AppError } from '../utils/appError';
 
 class ExpenseService {
+  private calculateSplitAmounts(
+    totalAmount: number,
+    memberCount: number
+  ): number[] {
+    const totalCents = Math.round(totalAmount * 100);
+    const baseAmountPerMember = Math.floor(totalCents / memberCount);
+    const remainder = totalCents % memberCount;
+
+    const amounts = Array(memberCount).fill(baseAmountPerMember);
+
+    for (let i = 0; i < remainder; i++) {
+      amounts[i] += 1;
+    }
+
+    return amounts.map((cents) => cents / 100);
+  }
+
   async createExpense(teamId: string, userId: string, data: CreateExpenseDto) {
     await teamService.checkTeam(teamId);
     await categoryService.getCategoryById(teamId, data.categoryId);
@@ -35,13 +52,15 @@ class ExpenseService {
       }
       membersToSplitBetween = allTeamMembers.map((member) => member.User.id);
     }
-    const splitMembers: splitMembersType = membersToSplitBetween.map(
-      (member) => ({
-        userId: member,
-        amount: data.amount / membersToSplitBetween.length,
-      })
-    );
-    const { categoryId, amount, title, date, ...rest } = data;
+    const splitMembers: splitMembersType = this.calculateSplitAmounts(
+      data.amount,
+      membersToSplitBetween.length
+    ).map((amount, index) => ({
+      userId: membersToSplitBetween[index],
+      amount,
+    }));
+
+    const { categoryId, amount, title, date } = data;
     const expense = await expenseModel.createExpense(
       teamId,
       userId,
